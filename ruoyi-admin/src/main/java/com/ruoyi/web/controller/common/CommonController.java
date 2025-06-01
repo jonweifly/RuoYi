@@ -49,16 +49,23 @@ public class CommonController
     {
         try
         {
+            // 检查文件名是否允许下载
             if (!FileUtils.checkAllowDownload(fileName))
             {
                 throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。 ", fileName));
             }
+            // 生成真实文件名(时间戳+原文件名)
             String realFileName = System.currentTimeMillis() + fileName.substring(fileName.indexOf("_") + 1);
+            // 获取文件完整路径
             String filePath = RuoYiConfig.getDownloadPath() + fileName;
 
+            // 设置响应内容类型为二进制流
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+            // 设置响应头信息
             FileUtils.setAttachmentResponseHeader(response, realFileName);
+            // 将文件写入响应输出流
             FileUtils.writeBytes(filePath, response.getOutputStream());
+            // 如果需要删除文件
             if (delete)
             {
                 FileUtils.deleteFile(filePath);
